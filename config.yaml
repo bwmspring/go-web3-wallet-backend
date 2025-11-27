@@ -1,0 +1,41 @@
+# SERVER CONFIGURATION (服务器配置)
+server:
+  port: 8080
+  environment: "development" # development | staging | production
+  
+  # JWT 认证配置
+  # WARNING: 生产环境必须使用至少 32 字节的长随机密钥！
+  jwt_secret: "a_very_long_and_secure_secret_key_for_production_env_32bytes"
+  jwt_duration: "24h" # Token 有效期
+
+
+# DATABASE CONFIGURATION (数据库配置 - PostgreSQL)
+database:
+  host: "localhost"
+  port: "5432"
+  user: "web3_user"       # 数据库用户名
+  password: "admin123" # 数据库密码
+  name: "web3_wallet_db"  # 数据库名
+
+  # GORM 连接池优化 (对应 database/postgres.go 中的设置)
+  # 优化目标：在高并发下保持性能和连接稳定
+  # MAX_IDLE_CONNS: 设置空闲连接池中的最大连接数。
+  # 推荐值：(MaxOpenConns * 0.7)
+  max_idle_conns: 10
+  
+  # MAX_OPEN_CONNS: 设置打开数据库连接的最大数量。
+  # 推荐值：根据您的数据库限制和应用并发量设定 (通常不超过 20-50)
+  max_open_conns: 30
+  
+  # CONN_MAX_LIFETIME_MINUTES: 设置连接可重用的最大时间 (以分钟为单位)。
+  # 推荐值：用于防止连接因长时间闲置而被数据库断开 (如 AWS RDS 的 8 小时限制)
+  conn_max_lifetime_minutes: 30
+
+
+# BLOCKCHAIN CONFIGURATION (区块链配置 - 用于链上查询 C1)
+blockchain:
+  # Ethereum JSON-RPC 节点 URL (例如：Infura, Alchemy, 或本地 Geth)
+  # 生产环境中应使用私有节点或付费服务
+  ethereum_rpc_url: "https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID"
+  # 客户端连接超时设置
+  timeout_seconds: 15
