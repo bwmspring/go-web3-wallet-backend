@@ -5,25 +5,18 @@ import (
 
 	"gorm.io/gorm"
 
-	"github.com/bwmspring/go-web3-wallet-backend/database"
+	"github.com/bwmspring/go-web3-wallet-backend/internal/app/service"
 	"github.com/bwmspring/go-web3-wallet-backend/model"
 )
-
-// UserRepository 定义了用户数据访问的方法接口
-type UserRepository interface {
-	CreateUser(user *model.User) error
-	FindByUsername(username string) (*model.User, error)
-	FindByID(id uint) (*model.User, error)
-}
 
 type userRepository struct {
 	db *gorm.DB
 }
 
 // NewUserRepository 创建并返回一个新的 UserRepository 实例
-func NewUserRepository() UserRepository {
+func NewUserRepository(db *gorm.DB) service.UserRepository {
 	return &userRepository{
-		db: database.GetDB(),
+		db: db,
 	}
 }
 

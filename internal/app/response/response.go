@@ -1,11 +1,11 @@
-package api
+package response
 
 import (
 	"github.com/gin-gonic/gin"
 )
 
-// ResponseCode 定义业务操作状态码。
-// 区别于 HTTP 状态码，用于表示业务处理结果。
+// ResponseCode 定义业务操作状态码
+// 区别于 HTTP 状态码，用于表示业务处理结果
 const (
 	CodeSuccess        = 0    // 成功
 	CodeInvalidParam   = 1001 // 参数校验失败

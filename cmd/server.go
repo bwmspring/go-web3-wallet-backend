@@ -14,9 +14,9 @@ import (
 	"go.uber.org/zap"
 
 	"github.com/bwmspring/go-web3-wallet-backend/config"
-	"github.com/bwmspring/go-web3-wallet-backend/database"
+	"github.com/bwmspring/go-web3-wallet-backend/internal/app"
+	"github.com/bwmspring/go-web3-wallet-backend/internal/app/store"
 	"github.com/bwmspring/go-web3-wallet-backend/pkg/logger"
-	"github.com/bwmspring/go-web3-wallet-backend/router"
 )
 
 var cfgFile string
@@ -54,10 +54,17 @@ func runServe() {
 	defer logger.Logger.Sync()
 
 	// 初始化数据库连接
-	database.InitDatabase(Cfg)
+	database, err := store.NewDatabase(Cfg)
+	if err != nil {
+		logger.Logger.Fatal("Failed to initialize database", zap.Error(err))
+	}
+	defer database.Close()
 
-	// 初始化路由
-	r := router.InitRouter(Cfg)
+	// 初始化应用容器（包含所有依赖）
+	application := app.NewApp(Cfg, database.DB())
+
+	// 获取配置好的路由
+	r := application.Router()
 
 	// 配置 HTTP 服务器
 	srv := &http.Server{

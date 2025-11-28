@@ -8,24 +8,20 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
-	"github.com/bwmspring/go-web3-wallet-backend/api"
-	"github.com/bwmspring/go-web3-wallet-backend/config"
+	"github.com/bwmspring/go-web3-wallet-backend/internal/app/response"
+	"github.com/bwmspring/go-web3-wallet-backend/internal/app/service"
 	"github.com/bwmspring/go-web3-wallet-backend/pkg/logger"
-	"github.com/bwmspring/go-web3-wallet-backend/service"
 )
 
 // UserIDKey 是在 Gin Context 中存储用户 ID 的 Key
 const UserIDKey = "userID"
 
-// AuthMiddleware 创建 JWT 认证中间件。
-func AuthMiddleware(cfg *config.Config) gin.HandlerFunc {
-	// 确保 JWTService 实例只创建一次
-	jwtService := service.NewJWTService(cfg)
-
+// JWTAuth 返回 JWT 认证中间件
+func JWTAuth(jwtService service.JWTService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			api.Error(c, http.StatusUnauthorized, api.CodeUnauthorized, "请求头缺少 Authorization 认证信息")
+			response.Error(c, http.StatusUnauthorized, response.CodeUnauthorized, "请求头缺少 Authorization 认证信息")
 			c.Abort()
 			return
 		}
@@ -33,7 +29,7 @@ func AuthMiddleware(cfg *config.Config) gin.HandlerFunc {
 		parts := strings.SplitN(authHeader, " ", 2)
 		// 检查格式是否是 "Bearer <token>"
 		if !(len(parts) == 2 && strings.ToLower(parts[0]) == "bearer") {
-			api.Error(c, http.StatusUnauthorized, api.CodeUnauthorized, "认证格式错误，应为 'Bearer <token>'")
+			response.Error(c, http.StatusUnauthorized, response.CodeUnauthorized, "认证格式错误，应为 'Bearer <token>'")
 			c.Abort()
 			return
 		}
@@ -44,7 +40,7 @@ func AuthMiddleware(cfg *config.Config) gin.HandlerFunc {
 		claims, err := jwtService.ValidateToken(tokenString)
 		if err != nil {
 			logger.Logger.Debug("Token validation failed", zap.Error(err))
-			api.Error(c, http.StatusUnauthorized, api.CodeUnauthorized, "认证令牌无效或已过期")
+			response.Error(c, http.StatusUnauthorized, response.CodeUnauthorized, "认证令牌无效或已过期")
 			c.Abort()
 			return
 		}
@@ -55,7 +51,7 @@ func AuthMiddleware(cfg *config.Config) gin.HandlerFunc {
 	}
 }
 
-// GetUserID 从 Gin Context 中提取当前认证用户的 ID。
+// GetUserID 从 Gin Context 中提取当前认证用户的 ID
 func GetUserID(c *gin.Context) (uint, error) {
 	val, exists := c.Get(UserIDKey)
 	if !exists {

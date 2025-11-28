@@ -7,34 +7,39 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 
-	"github.com/bwmspring/go-web3-wallet-backend/config"
 	"github.com/bwmspring/go-web3-wallet-backend/model"
 	"github.com/bwmspring/go-web3-wallet-backend/pkg/logger"
-	"github.com/bwmspring/go-web3-wallet-backend/repository"
 )
 
-// AuthService 定义了认证相关的业务逻辑方法。
-type AuthService interface {
+// UserRepository 定义了用户数据访问的接口（在 service 层定义，由 repository 层实现）
+type UserRepository interface {
+	CreateUser(user *model.User) error
+	FindByUsername(username string) (*model.User, error)
+	FindByID(id uint) (*model.User, error)
+}
+
+// UserService 定义了用户相关的业务逻辑接口
+type UserService interface {
 	Register(username string, password string) (*model.User, error)
 	Login(username string, password string) (string, error)
 	FindUserByUsername(username string) (*model.User, error)
 }
 
-type authService struct {
-	userRepo   repository.UserRepository
+type userService struct {
+	userRepo   UserRepository
 	jwtService JWTService
 }
 
-// NewAuthService 创建并返回新的 AuthService 实例。
-func NewAuthService(cfg *config.Config) AuthService {
-	return &authService{
-		userRepo:   repository.NewUserRepository(),
-		jwtService: NewJWTService(cfg),
+// NewUserService 创建并返回新的 UserService 实例（依赖注入）
+func NewUserService(userRepo UserRepository, jwtService JWTService) UserService {
+	return &userService{
+		userRepo:   userRepo,
+		jwtService: jwtService,
 	}
 }
 
 // Register 处理用户注册业务逻辑。
-func (s *authService) Register(username string, password string) (*model.User, error) {
+func (s *userService) Register(username string, password string) (*model.User, error) {
 	// 1. 业务校验：检查用户名是否已存在
 	_, err := s.userRepo.FindByUsername(username)
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -69,7 +74,7 @@ func (s *authService) Register(username string, password string) (*model.User, e
 }
 
 // Login 处理用户登录业务逻辑。
-func (s *authService) Login(username string, password string) (string, error) {
+func (s *userService) Login(username string, password string) (string, error) {
 	// 1. 查找用户
 	user, err := s.userRepo.FindByUsername(username)
 	if errors.Is(err, gorm.ErrRecordNotFound) || user == nil {
@@ -96,8 +101,8 @@ func (s *authService) Login(username string, password string) (string, error) {
 	return token, nil
 }
 
-// FindUserByUsername 实现 AuthService 接口
-func (s *authService) FindUserByUsername(username string) (*model.User, error) {
+// FindUserByUsername 实现 UserService 接口
+func (s *userService) FindUserByUsername(username string) (*model.User, error) {
 	user, err := s.userRepo.FindByUsername(username)
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, errors.New("用户不存在")

@@ -11,7 +11,6 @@ type Wallet struct {
 	ID uint `gorm:"primaryKey" json:"id"`
 
 	// UserID 是外键，关联到 User 表
-	// GORM 会自动创建索引，并依赖我们在数据库层面定义的外键约束。
 	UserID uint `gorm:"not null" json:"user_id"`
 
 	// 公钥地址 (例如: 0x...)，必须唯一
@@ -29,4 +28,12 @@ type Wallet struct {
 
 	// **软删除字段**
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+}
+
+// MnemonicSeed 用于存储用户的助记词信息（也需高度加密）
+type MnemonicSeed struct {
+	ID            uint   `gorm:"primarykey"`
+	UserID        uint   `gorm:"index;not null"`
+	EncryptedSeed string `gorm:"type:text;not null;comment:加密后的BIP39助记词"` // 使用不同的密钥或方法加密
+	CreatedAt     time.Time
 }

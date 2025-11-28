@@ -12,7 +12,7 @@ import (
 	"github.com/bwmspring/go-web3-wallet-backend/pkg/logger"
 )
 
-// JWTClaims 定义了 JWT 有效载荷中应包含的自定义信息。
+// JWTClaims 定义了 JWT 有效载荷中应包含的自定义信息
 type JWTClaims struct {
 	UserID   uint   `json:"user_id"`
 	Username string `json:"username"`
@@ -24,10 +24,11 @@ type CustomClaims struct {
 	jwt.RegisteredClaims
 }
 
-// JWTService 定义了管理 JSON Web Token (JWT) 的核心契约。
+// JWTService 定义了管理 JSON Web Token (JWT) 的核心契约
 type JWTService interface {
 	GenerateToken(user *model.User) (string, error)
 	ValidateToken(token string) (*JWTClaims, error)
+	RefreshToken(token string) (string, error)
 }
 
 // jwtService 是 JWTService 接口的具体实现。
@@ -101,4 +102,20 @@ func (s *jwtService) ValidateToken(tokenString string) (*JWTClaims, error) {
 	}
 
 	return nil, errors.New("认证令牌无效")
+}
+
+// RefreshToken 刷新 JWT Token
+func (s *jwtService) RefreshToken(tokenString string) (string, error) {
+	claims, err := s.ValidateToken(tokenString)
+	if err != nil {
+		return "", err
+	}
+
+	// 根据用户 ID 重新生成 Token
+	user := &model.User{
+		ID:       claims.UserID,
+		Username: claims.Username,
+	}
+
+	return s.GenerateToken(user)
 }
