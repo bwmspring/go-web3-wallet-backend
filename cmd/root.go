@@ -4,8 +4,6 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-
-	"github.com/bwmspring/go-web3-wallet-backend/internal/apiserver"
 )
 
 // rootCmd 代表所有子命令的根命令
@@ -19,9 +17,13 @@ such as 'apiserver', 'authzserver', and 'migrate'.
 }
 
 // Execute 是 main.main() 调用的唯一函数
+// 它注册所有子命令并执行根命令
 func Execute() {
 	// 注册所有子命令
-	rootCmd.AddCommand(apiserver.NewAPIServerCommand())
+	rootCmd.AddCommand(NewAPIServerCommand())
+	// 未来可以在这里添加其他子命令，例如：
+	// rootCmd.AddCommand(NewAuthzServerCommand())
+
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}

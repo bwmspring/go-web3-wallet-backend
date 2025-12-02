@@ -41,7 +41,7 @@ RESET           := \033[0m
 
 .PHONY: all help
 .PHONY: build build-linux build-darwin
-.PHONY: run
+.PHONY: run dev
 .PHONY: clean clean-all
 .PHONY: test test-coverage test-race test-benchmark
 .PHONY: lint lint-fix format fmt
@@ -49,6 +49,21 @@ RESET           := \033[0m
 .PHONY: install-tools
 
 all: help
+
+## help: 显示帮助信息
+help:
+	@printf "$(GREEN)===========================================$(RESET)\n"
+	@printf "$(GREEN)  Go Web3 Wallet Backend - Makefile 帮助$(RESET)\n"
+	@printf "$(GREEN)===========================================$(RESET)\n\n"
+	@printf "$(YELLOW)可用的命令：$(RESET)\n\n"
+	@grep -E '^## ' $(MAKEFILE_LIST) | sed 's/^## /  $(BLUE)/'  | sed 's/:/ $(RESET)- /'
+	@printf "\n$(YELLOW)常用示例：$(RESET)\n"
+	@printf "  $(BLUE)make dev$(RESET)         - 开发模式快速启动\n"
+	@printf "  $(BLUE)make build$(RESET)       - 编译项目\n"
+	@printf "  $(BLUE)make run$(RESET)         - 编译并运行\n"
+	@printf "  $(BLUE)make test$(RESET)        - 运行测试\n"
+	@printf "  $(BLUE)make fmt$(RESET)         - 格式化代码\n"
+	@printf "\n"
 
 
 ## build: 编译应用程序 (当前平台)
@@ -74,10 +89,15 @@ build-darwin:
 	@printf "$(GREEN)✓ macOS 构建完成$(RESET)\n"
 
 
-## run: 编译并运行应用 (生产模式)
+## run: 编译并运行 API 服务器
 run: build
-	@printf "$(BLUE)>>> 正在启动服务器...$(RESET)\n"
-	@$(TARGET) serve
+	@printf "$(BLUE)>>> 正在启动 API 服务器...$(RESET)\n"
+	@$(TARGET) apiserver --config=./config.yaml
+
+## dev: 直接运行 API 服务器（不编译），适合开发调试
+dev:
+	@printf "$(BLUE)>>> 正在以开发模式启动 API 服务器...$(RESET)\n"
+	@go run $(MAIN_PACKAGE) apiserver --config=./config.yaml
 
 
 ## clean: 清理构建产物
