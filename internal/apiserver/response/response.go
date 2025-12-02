@@ -7,11 +7,12 @@ import (
 // ResponseCode 定义业务操作状态码
 // 区别于 HTTP 状态码，用于表示业务处理结果
 const (
-	CodeSuccess        = 0    // 成功
-	CodeInvalidParam   = 1001 // 参数校验失败
-	CodeUnauthorized   = 1002 // 认证或授权失败
-	CodeResourceExists = 1003 // 资源已存在（如用户名/地址已注册）
-	CodeInternalError  = 9999 // 服务器内部错误
+	CodeSuccess          = 0    // 成功
+	CodeInvalidParam     = 1001 // 参数校验失败
+	CodeUnauthorized     = 1002 // 认证或授权失败
+	CodeResourceExists   = 1003 // 资源已存在（如用户名/地址已注册）
+	CodeResourceNotFound = 1004 // 资源不存在
+	CodeInternalError    = 9999 // 服务器内部错误
 )
 
 // Response 封装了 API 响应的统一结构体 (API Envelope)
@@ -20,14 +21,14 @@ type Response struct {
 	Code int `json:"code"`
 
 	// Data: 响应的实际业务数据，可以是任意类型。
-	Data interface{} `json:"data,omitempty"`
+	Data any `json:"data,omitempty"`
 
 	// Message: 状态描述信息，便于调试和用户理解。
 	Message string `json:"message"`
 }
 
 // Success 封装成功的响应，并设置 HTTP 状态码为 200/201 等
-func Success(c *gin.Context, httpStatus int, data interface{}, message string) {
+func Success(c *gin.Context, httpStatus int, data any, message string) {
 	if message == "" {
 		message = "操作成功"
 	}

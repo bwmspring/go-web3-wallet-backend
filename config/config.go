@@ -8,9 +8,9 @@ import (
 
 // Config 顶级配置结构体
 type Config struct {
-	Server     ServerConfig     `mapstructure:"server"`
-	Database   DatabaseConfig   `mapstructure:"database"`
-	Blockchain BlockchainConfig `mapstructure:"blockchain"`
+	Server   ServerConfig       `mapstructure:"server"`
+	Database DatabaseConfig     `mapstructure:"database"`
+	Chains   []BlockchainConfig `mapstructure:"chains"   yaml:"chains"`
 }
 
 // ServerConfig 服务器配置
@@ -37,8 +37,14 @@ type DatabaseConfig struct {
 
 // BlockchainConfig 区块链配置
 type BlockchainConfig struct {
-	RPCUrl  string `mapstructure:"rpc_url"`
-	ChainID int    `mapstructure:"chain_id"`
+	ChainID     uint   `yaml:"chain_id"     mapstructure:"chain_id"`
+	Name        string `yaml:"name"         mapstructure:"name"`
+	RPCUrl      string `yaml:"rpc_url"      mapstructure:"rpc_url"`
+	ExplorerUrl string `yaml:"explorer_url" mapstructure:"explorer_url"`
+
+	// 假设 YAML 中有更复杂的结构，例如 contract_addresses:
+	ContractAddresses map[string]string `yaml:"contract_addresses" mapstructure:"contract_addresses"`
+	IsTestnet         bool              `yaml:"is_testnet"         mapstructure:"is_testnet"` // 对应可选字段
 }
 
 // LoadConfigFromFile 加载并解析配置文件

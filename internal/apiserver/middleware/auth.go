@@ -8,8 +8,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
-	"github.com/bwmspring/go-web3-wallet-backend/internal/app/response"
-	"github.com/bwmspring/go-web3-wallet-backend/internal/app/service"
+	"github.com/bwmspring/go-web3-wallet-backend/internal/apiserver/response"
+	"github.com/bwmspring/go-web3-wallet-backend/internal/apiserver/service"
 	"github.com/bwmspring/go-web3-wallet-backend/pkg/logger"
 )
 

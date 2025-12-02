@@ -1,33 +1,35 @@
-package repository
+package store
 
 import (
 	"errors"
 
 	"gorm.io/gorm"
 
-	"github.com/bwmspring/go-web3-wallet-backend/internal/app/service"
+	"github.com/bwmspring/go-web3-wallet-backend/internal/apiserver/service"
 	"github.com/bwmspring/go-web3-wallet-backend/model"
 )
 
-type userRepository struct {
+type users struct {
 	db *gorm.DB
 }
 
-// NewUserRepository 创建并返回一个新的 UserRepository 实例
-func NewUserRepository(db *gorm.DB) service.UserRepository {
-	return &userRepository{
+var _ service.UserStore = (*users)(nil)
+
+// NewUsers 创建并返回一个新的 UserStore 实例
+func NewUsers(db *gorm.DB) service.UserStore {
+	return &users{
 		db: db,
 	}
 }
 
 // CreateUser 在数据库中创建新用户记录
-func (r *userRepository) CreateUser(user *model.User) error {
+func (r *users) CreateUser(user *model.User) error {
 	result := r.db.Create(user)
 	return result.Error
 }
 
 // FindByUsername 通过用户名查找用户
-func (r *userRepository) FindByUsername(username string) (*model.User, error) {
+func (r *users) FindByUsername(username string) (*model.User, error) {
 	var user model.User
 	// GORM 自动添加 deleted_at IS NULL 条件
 	result := r.db.Where("username = ?", username).First(&user)
@@ -42,7 +44,7 @@ func (r *userRepository) FindByUsername(username string) (*model.User, error) {
 }
 
 // FindByID 通过 ID 查找用户
-func (r *userRepository) FindByID(id uint) (*model.User, error) {
+func (r *users) FindByID(id uint) (*model.User, error) {
 	var user model.User
 	result := r.db.First(&user, id)
 

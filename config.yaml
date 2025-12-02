@@ -32,10 +32,28 @@ database:
   conn_max_lifetime_minutes: 30
 
 
-# BLOCKCHAIN CONFIGURATION (区块链配置 - 用于链上查询 C1)
-blockchain:
-  # Ethereum JSON-RPC 节点 URL (例如：Infura, Alchemy, 或本地 Geth)
-  # 生产环境中应使用私有节点或付费服务
-  ethereum_rpc_url: "https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID"
-  # 客户端连接超时设置
-  timeout_seconds: 15
+# 区块链客户端配置
+chains:
+  # --- 1. 以太坊主网 (Ethereum Mainnet) ---
+  - chain_id: 1
+    name: "Ethereum Mainnet"
+    rpc_url: "https://eth-mainnet.infura.io/v3/YOUR_KEY"
+    explorer_url: "https://etherscan.io"
+    # 额外的链级配置，例如 Gas 策略或默认合约
+    contract_addresses:
+      factory: "0xABC123..."
+      weth: "0xC02aaA..."
+
+  # --- 2. Polygon PoS 链 ---
+  - chain_id: 137
+    name: "Polygon"
+    rpc_url: "https://polygon-rpc.com"
+    explorer_url: "https://polygonscan.com"
+    contract_addresses:
+      factory: "0xDEF456..."
+
+  # --- 3. Sepolia 测试网 (Testnet) ---
+  - chain_id: 11155111
+    name: "Sepolia Testnet"
+    rpc_url: "https://eth-sepolia.public.io"
+    is_testnet: true
