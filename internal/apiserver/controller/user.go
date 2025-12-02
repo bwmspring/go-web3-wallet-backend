@@ -7,9 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 
-	"github.com/bwmspring/go-web3-wallet-backend/internal/apiserver/middleware"
 	"github.com/bwmspring/go-web3-wallet-backend/internal/apiserver/response"
 	"github.com/bwmspring/go-web3-wallet-backend/internal/apiserver/service"
+	"github.com/bwmspring/go-web3-wallet-backend/internal/pkg/middleware"
 	"github.com/bwmspring/go-web3-wallet-backend/pkg/logger"
 )
 
@@ -37,7 +37,6 @@ type UserData struct {
 	Username string `json:"username"`
 }
 
-// Register 处理用户注册请求 (POST /register)
 // Register 处理用户注册请求 (POST /register)
 func (ctrl *UserController) Register(c *gin.Context) {
 	var req UserRequest

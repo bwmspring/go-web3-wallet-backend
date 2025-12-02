@@ -34,7 +34,7 @@ database:
 
 # 区块链客户端配置
 chains:
-  # --- 1. 以太坊主网 (Ethereum Mainnet) ---
+  # 1. 以太坊主网 (Ethereum Mainnet)
   - chain_id: 1
     name: "Ethereum Mainnet"
     rpc_url: "https://eth-mainnet.infura.io/v3/YOUR_KEY"
@@ -44,7 +44,7 @@ chains:
       factory: "0xABC123..."
       weth: "0xC02aaA..."
 
-  # --- 2. Polygon PoS 链 ---
+  # 2. Polygon PoS 链
   - chain_id: 137
     name: "Polygon"
     rpc_url: "https://polygon-rpc.com"
@@ -52,8 +52,51 @@ chains:
     contract_addresses:
       factory: "0xDEF456..."
 
-  # --- 3. Sepolia 测试网 (Testnet) ---
+  # 3. Sepolia 测试网 (Testnet)
   - chain_id: 11155111
     name: "Sepolia Testnet"
     rpc_url: "https://eth-sepolia.public.io"
     is_testnet: true
+
+
+# CORS 跨域配置
+cors:
+  # 允许访问的源。生产环境应指定具体域名，避免使用 "*"
+  allow_origins: 
+    - "http://localhost:3000"
+    - "https://your-dapp-domain.com"
+    - "*" # 警告：生产环境慎用
+  
+  # 允许的 HTTP 方法
+  allow_methods:
+    - "GET"
+    - "POST"
+    - "PUT"
+    - "DELETE"
+    - "OPTIONS"
+
+  # 允许携带的 Header 字段
+  allow_headers:
+    - "Origin"
+    - "Content-Length"
+    - "Content-Type"
+    - "Accept"
+    - "X-Request-ID"
+    - "Authorization"
+  
+  # 允许浏览器暴露给前端的响应 Header 字段
+  expose_headers:
+    - "Content-Length"
+    - "X-Request-ID"
+
+  # 是否允许携带 Cookies/认证信息 (Authorization Header)
+  allow_credentials: true
+
+  # 预检请求 (OPTIONS) 的缓存时间 (秒)，在此时间内不再发送预检请求
+  max_age: 3600 # 1小时
+
+
+limit:
+  enable: true
+  rate: 100 # 每秒允许100个请求
+  bucket: 1000 # 令牌桶的容量为1000个请求

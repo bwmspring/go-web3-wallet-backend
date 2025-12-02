@@ -90,9 +90,14 @@ func (a *App) initControllers() {
 
 // InitRouter 初始化并返回配置好的 Gin Engine
 func (a *App) InitRouter() *gin.Engine {
+	if a.cfg == nil {
+		panic("Application config (a.cfg) is nil!")
+	}
 	// 创建配置对象，将所有控制器和服务注入
 	routerCfg := &router.RouterConfig{
-		Cfg:              a.cfg,
+		ServerCfg:        &a.cfg.Server,
+		CORSConfig:       &a.cfg.CORS,
+		LimitConfig:      &a.cfg.Limit,
 		JWTService:       a.jwtService,
 		AuthController:   a.authController,
 		UserController:   a.userController,

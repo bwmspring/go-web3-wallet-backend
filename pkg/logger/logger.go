@@ -10,6 +10,9 @@ import (
 // Logger 是全局导出的 Zap Logger 实例
 var Logger *zap.Logger
 
+// SLogger 是 SugaredLogger 实例，用于更方便的结构化日志
+var SLogger *zap.SugaredLogger
+
 // InitLogger 根据运行环境初始化 Zap Logger
 func InitLogger(env string) {
 	var config zap.Config
@@ -33,9 +36,21 @@ func InitLogger(env string) {
 
 	// 导出原生 Logger 实例
 	Logger = zLogger
-	// 使用原生 Logger 记录初始化信息
-	Logger.Info("Zap Logger initialized successfully", zap.String("environment", env))
+	// 创建 SugaredLogger 实例
+	SLogger = Logger.Sugar()
+
+	SLogger.Infow("Zap Logger initialized successfully", "environment", env)
 
 	// 确保标准库 log 的输出也被重定向到 Zap
 	zap.RedirectStdLog(Logger)
+}
+
+// L 返回全局的 SugaredLogger 实例，用于记录结构化日志
+func L() *zap.SugaredLogger {
+	// 防止在未初始化时调用
+	if SLogger == nil {
+		// 返回一个空的 Logger 以避免运行时崩溃，但会丢失日志
+		return zap.NewNop().Sugar()
+	}
+	return SLogger
 }

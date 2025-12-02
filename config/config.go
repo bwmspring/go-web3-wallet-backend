@@ -11,6 +11,8 @@ type Config struct {
 	Server   ServerConfig       `mapstructure:"server"`
 	Database DatabaseConfig     `mapstructure:"database"`
 	Chains   []BlockchainConfig `mapstructure:"chains"   yaml:"chains"`
+	CORS     CORSConfig         `mapstructure:"cors"     yaml:"cors"`
+	Limit    LimitConfig        `mapstructure:"limit"    yaml:"limit"`
 }
 
 // ServerConfig 服务器配置
@@ -45,6 +47,23 @@ type BlockchainConfig struct {
 	// 假设 YAML 中有更复杂的结构，例如 contract_addresses:
 	ContractAddresses map[string]string `yaml:"contract_addresses" mapstructure:"contract_addresses"`
 	IsTestnet         bool              `yaml:"is_testnet"         mapstructure:"is_testnet"` // 对应可选字段
+}
+
+// CORSConfig 是 CORS 相关的配置
+type CORSConfig struct {
+	AllowOrigins     []string `yaml:"allow_origins"     mapstructure:"allow_origins"`
+	AllowMethods     []string `yaml:"allow_methods"     mapstructure:"allow_methods"`
+	AllowHeaders     []string `yaml:"allow_headers"     mapstructure:"allow_headers"`
+	ExposeHeaders    []string `yaml:"expose_headers"    mapstructure:"expose_headers"`
+	AllowCredentials bool     `yaml:"allow_credentials" mapstructure:"allow_credentials"`
+	MaxAge           int      `yaml:"max_age"           mapstructure:"max_age"` // seconds
+}
+
+// LimitConfig 频率限制配置
+type LimitConfig struct {
+	Enable bool    `yaml:"enable" mapstructure:"enable"` // 是否启用限流
+	Rate   float64 `yaml:"rate"   mapstructure:"rate"`   // 每秒允许产生的令牌数 (r)
+	Bucket int     `yaml:"bucket" mapstructure:"bucket"` // 令牌桶的容量 (b)
 }
 
 // LoadConfigFromFile 加载并解析配置文件
